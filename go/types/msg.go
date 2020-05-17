@@ -25,7 +25,7 @@ func (r *Msg) Marshal() ([]byte, error) {
 }
 */
 
-type MegError struct {
+type MsgError struct {
 	Result    bool   `json:"result"`    
 	Request   string `json:"request"`   
 	ErrorCode int64  `json:"error_code"`
