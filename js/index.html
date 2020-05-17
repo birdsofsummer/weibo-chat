@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta content="width=device-width,initial-scale=1,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta name="format-detection" content="telephone=no,address=no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="white">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" >
+    <meta name="referrer" content="no-referrer">
+    <title>chat</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/vuetify/2.3.0-beta.5/vuetify.min.css" rel="stylesheet">
+</head>
+<body>
+     <main id="app">
+
+    <v-app>
+      <v-content>
+
+
+    <v-card
+        max-width="1300"
+        class="mx-auto"
+    >
+        <v-toolbar
+        color="cyan"
+        dark
+        >
+        <v-app-bar-nav-icon></v-app-bar-nav-icon>
+
+        <v-toolbar-title>Inbox</v-toolbar-title>
+
+        <v-spacer></v-spacer>
+
+        <v-btn icon>
+            <v-icon>mdi-magnify</v-icon>
+        </v-btn>
+        </v-toolbar>
+
+        <v-list three-line>
+        <template v-for="(item, index) in msg">
+
+
+            <v-subheader
+            :key='item.id + "h"'
+            v-text='""'
+            ></v-subheader>
+
+            <v-divider
+                v-if="index %10 ==0 && index>0 "
+            :key='index+"cc"'
+            :inset="true"
+            ></v-divider>
+
+            <v-list-item
+            :key="item.id"
+            @click=""
+            >
+            <v-list-item-avatar>
+                <v-img :src="item.from_user.avatar_large"></v-img>
+            </v-list-item-avatar>
+
+            <v-list-item-content>
+                <v-list-item-title v-text="item.from_user.screen_name"></v-list-item-title>
+                <v-list-item-subtitle v-text="item.content"></v-list-item-subtitle>
+            </v-list-item-content>
+
+            </v-list-item>
+        </template>
+        </v-list>
+    </v-card>
+
+    <v-card
+        max-width="1300"
+        class="mx-auto"
+    >
+        <v-toolbar
+        color="cyan"
+        dark
+        >
+        <v-app-bar-nav-icon></v-app-bar-nav-icon>
+
+        <v-toolbar-title>Inbox</v-toolbar-title>
+
+        <v-spacer></v-spacer>
+
+        <v-btn icon>
+            <v-icon>mdi-magnify</v-icon>
+        </v-btn>
+        </v-toolbar>
+
+        <v-list three-line>
+        <template v-for="(item, index) in items">
+            <v-subheader
+            v-if="item.header"
+            :key="item.header"
+            v-text="item.header"
+            ></v-subheader>
+
+            <v-divider
+            v-else-if="item.divider"
+            :key="index"
+            :inset="item.inset"
+            ></v-divider>
+
+            <v-list-item
+            v-else
+            :key="item.title"
+            @click=""
+            >
+            <v-list-item-avatar>
+                <v-img :src="item.avatar"></v-img>
+            </v-list-item-avatar>
+
+            <v-list-item-content>
+                <v-list-item-title v-html="item.title"></v-list-item-title>
+                <v-list-item-subtitle v-html="item.subtitle"></v-list-item-subtitle>
+            </v-list-item-content>
+            </v-list-item>
+        </template>
+        </v-list>
+    </v-card>
+
+
+
+      </v-content>
+    </v-app>
+
+
+    </main>
+</body>
+
+<script src="https://cdn.bootcdn.net/ajax/libs/localforage/1.7.3/localforage.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/superagent/4.1.0/superagent.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/ramda/0.27.0/ramda.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.11/vue.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/vuetify/2.3.0-beta.5/vuetify.min.js"></script>
+
+
+<script>
+
+
+
+    const get_msg=async (u="/msg.json")=>{
+        let d=await superagent.get(u)
+        return JSON.parse(d.text)
+    }
+    new Vue({
+      el: '#app',
+      vuetify: new Vuetify(),
+      data: {
+        items: [],
+        msg:[],
+      },
+      methods:{
+          say(t=""){
+            console.log(t, this.$el)  
+            console.log(t, this.$data) 
+          },
+          async init(){
+            let d=await get_msg("/msg.json")
+            this.msg=d
+
+            let d1=await get_msg("/item.json")
+            this.items=d1
+
+          },
+      },
+      beforeCeate(){
+
+      },
+      created(){
+
+      },
+      beforeMount(){
+
+      },
+      mounted(){
+          this.init()
+     },
+      beforeUpdate () {
+          this.say(1)
+       },
+      updated () {
+          this.say(2)
+      },
+      beforeDestroty(){
+
+      },
+      destroyed() {
+
+      }
+    })
+
+
+
+
+
+
+
+
+</script>
+</html>
+
+
+
