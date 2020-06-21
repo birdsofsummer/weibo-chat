@@ -62,12 +62,33 @@
             @click=""
             >
             <v-list-item-avatar>
-                <v-img :src="item.from_user.avatar_large"></v-img>
+                <a :href="item.from_uid|weibo_home" target="_blank">
+                    <v-img :src="item.from_user.avatar_large"></v-img>
+                </a>
             </v-list-item-avatar>
 
             <v-list-item-content>
-                <v-list-item-title v-text="item.from_user.screen_name"></v-list-item-title>
-                <v-list-item-subtitle v-text="item.content"></v-list-item-subtitle>
+
+                <v-list-item-title >
+                    {{item.from_user.screen_name}}
+                    {{item.time|format_unix}}
+                </v-list-item-title>
+                
+                <v-list-item-subtitle>
+                    {{item.content}}
+                </v-list-item-subtitle>
+
+                <v-list-item-subtitle v-if="item.url_objects">
+
+                <a :href="k.info.url_long" v-for="(k,i) in item.url_objects">
+                    <div >
+                        {{k.status.text}}
+                    </div>
+                </a>
+
+                </v-list-item-subtitle>
+
+
             </v-list-item-content>
 
             </v-list-item>
@@ -78,6 +99,7 @@
     <v-card
         max-width="1300"
         class="mx-auto"
+        v-if="items.length"
     >
         <v-toolbar
         color="cyan"
@@ -135,6 +157,8 @@
     </main>
 </body>
 
+
+<script src="https://cdn.bootcdn.net/ajax/libs/moment.js/2.26.0/moment.min.js"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/localforage/1.7.3/localforage.min.js"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/superagent/4.1.0/superagent.min.js"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/ramda/0.27.0/ramda.min.js"></script>
@@ -145,11 +169,21 @@
 <script>
 
 
-
     const get_msg=async (u="/msg.json")=>{
         let d=await superagent.get(u)
         return JSON.parse(d.text)
     }
+
+
+    const format_unix=t=>moment.unix(t).format('YYYY-MM-DD hh:mm:ss')
+    const weibo_home=t=>`https://weibo.com/u/`+t
+    const weibo_group=t=>"https://m.weibo.cn/p/index?containerid=230917_-_joinedgroups_"+t
+
+    Vue.filter('format_unix', format_unix)
+    Vue.filter('weibo_home', weibo_home)
+    Vue.filter('weibo_group', weibo_group)
+
+
     new Vue({
       el: '#app',
       vuetify: new Vuetify(),
@@ -163,11 +197,17 @@
             console.log(t, this.$data) 
           },
           async init(){
-            let d=await get_msg("/msg.json")
+            let d=await localforage.getItem('chat') 
+            if (d){
+
+            }else{
+               d=await get_msg("/msg1.json")
+               localforage.setItem("history",d)
+            }
             this.msg=d
 
-            let d1=await get_msg("/item.json")
-            this.items=d1
+         //   let d1=await get_msg("/item.json")
+         //   this.items=d1
 
           },
       },
