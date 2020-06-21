@@ -201,7 +201,7 @@
             if (d){
 
             }else{
-               d=await get_msg("/msg1.json")
+               d=await get_msg("msg1.json")
                localforage.setItem("chat",d)
             }
             this.msg=d
