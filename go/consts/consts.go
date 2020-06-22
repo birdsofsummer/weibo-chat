@@ -46,7 +46,7 @@ func GetHeaders() map[string]string{
 		h[k]=v
 	}
 	h["Cookie"]=config.Cookie
-	//fmt.Println("zzzzzzzz",h)
+	fmt.Println("zzzzzzzz",h)
 	return h
 }
 
