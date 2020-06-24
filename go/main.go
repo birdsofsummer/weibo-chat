@@ -42,6 +42,9 @@ func setupRouter() *gin.Engine {
 
     return router
 }
+
+
+
 func App() {
 
 	err,engine:=Conn()

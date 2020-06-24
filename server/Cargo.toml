@@ -1,5 +1,5 @@
 [package]
-name = "server"
+name = "diesel_demo"
 version = "0.1.0"
 authors = ["小舟从此逝 <1052334039@qq.com>"]
 edition = "2018"
@@ -9,3 +9,9 @@ edition = "2018"
 [dependencies]
 actix-web = "2.0.0"
 actix-rt = "1.0.0"
+tokio = "0.2.21"
+#mysql_async = "0.23.1"
+#mysql = "18.2.0"
+#diesel = "1.4.5"
+diesel = { version = "1.4.5", features = ["postgres"] }
+dotenv = "0.15.0"

@@ -1,3 +1,10 @@
+
+fn main(){
+  println!("123")
+}
+
+
+/*
 use actix_web::{get, web, App, HttpServer, Responder};
 
 #[get("/{id}/{name}/index.html")]
@@ -12,4 +19,4 @@ async fn main() -> std::io::Result<()> {
         .run()
         .await
 }
-
+*/
