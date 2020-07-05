@@ -22,6 +22,7 @@ import (
 	"net/http"
 	. "../consts"
 	. "../types"
+	"../types/contact"
 )
 
 var (
@@ -136,6 +137,42 @@ func get(u string,d map[string]interface{}) (*http.Response,error){
 	 return client.Do(req)
 }
 
+
+func Get_contacts() (contact.ContactData, error){
+	u:="https://api.weibo.com/webim/2/direct_messages/contacts.json"
+	d:=map[string]interface{}{
+		"special_source" : "3",
+		"add_virtual_user" : "3,4",
+		"is_include_group" : "0",
+		"need_back" : "0,0",
+		"count" : "50",
+		"source" : "209678993",
+		"t" : now(),
+	}
+	r,_:=get(u,d)
+	b, _ := ioutil.ReadAll(r.Body)
+	//fmt.Println("[contact]:",r.Status,string(b))
+	return contact.UnmarshalContact(b)
+}
+
+
+func Get_gid(c contact.ContactData,err error) ([]int64){
+	z:= []int64{}
+	if err!=nil{
+		fmt.Println("错误")
+		return z
+	}
+	for _,v:=range(c.Contacts){
+		fmt.Println(v.User.Name,v.User.ID,v.User.Type)
+		if v.User.Type == 2 {
+			z=append(z,v.User.ID)
+		}
+	}
+	//fmt.Println(z)
+	return z
+}
+
+
 func get_msg(max_mid int64,id int64)(Msg){
 	u:="https://api.weibo.com/webim/groupchat/query_messages.json"
 	d:=map[string]interface{}{
@@ -225,9 +262,8 @@ func Start1(){
 }
 
 
-func Start2(){
-	n:="json/msg1.json"
-	id:=config.ID
+func Start2(id int64){
+	n:=fmt.Sprintf("json/%d.json", id)
 	from:=int64(0)
 	last:=int64(0)
 	z:=Start(id,from,last)
@@ -245,6 +281,28 @@ func test1(){
 	n:="json/msg1.json"
 	save(z,n)
 }
+
+
+
+
+func GetGroupMsg(){
+	g:=Get_gid(Get_contacts())
+	fmt.Println(g)
+	c := make(chan int64, len(g))
+	go (func(){
+		for i,id:=range(g){
+			fmt.Println("start",i,id)
+			Start2(id)
+			fmt.Println("done",i,id)
+			c <- id
+		}
+	})()
+	for i := range c {
+		fmt.Println(i,"done")
+	}
+	fmt.Println("group done")
+}
+
 
 
 func main() {

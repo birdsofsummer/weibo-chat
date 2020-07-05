@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"github.com/gin-gonic/gin"
+	//. "./spider"
 )
 
 
@@ -58,7 +59,7 @@ func App() {
 	r.Run(":8080")
 }
 
-
 func main() {
-	App()
+	//App()
+	//GetGroupMsg()
 }
