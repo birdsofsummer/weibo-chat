@@ -249,7 +249,7 @@ func show_person(uid int64) (show.Data, error){
 
 
 // 7388859010 0
-// 翻页与组消息一样 
+// 翻页与群消息一样 
 // 第一页max_id=0 
 // 之后修改max_id
 func get_conversation(uid int64,max_id int64) (conversation.Data, error){
