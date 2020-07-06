@@ -23,6 +23,9 @@ import (
 	. "../consts"
 	. "../types"
 	"../types/contact"
+	"../types/query_group"
+	"../types/batch_exists"
+	"../types/conversation"
 )
 
 var (
@@ -195,6 +198,105 @@ func get_msg(max_mid int64,id int64)(Msg){
 	return msg
 }
 
+//209678993
+//封号
+//{"error":"User does not exists!","error_code":20003,"request":"/2/account/profile/basic.json"}
+
+func get_profile(s int64){
+   u:="https://api.weibo.com/webim/2/account/profile/basic.json"
+   d:=map[string]interface{}{
+	   source: fmt.Sprintf("%d", s),
+	   t:now(),
+   }
+   r,_:=get(u,d)
+   b, _ := ioutil.ReadAll(r.Body)
+   fmt.Println("[msg]:",r.Status,string(b))
+}
+
+
+
+
+// 7388859010
+func get_batch_exists(uid int64[]) (batch_exists.Data, error){
+	u:="https://api.weibo.com/webim/2/friendships/batch_exists.json"
+	uids:= strings.Join(uid , ",")
+	d:=map[string]interface{}{
+		"uids" : uids, 
+		"source" : "209678993", 
+		"t" : now(), 
+	}
+    r,_:=get(u,d)
+    b, _ := ioutil.ReadAll(r.Body)
+   //fmt.Println("[msg]:",r.Status,string(b))
+	return batch_exists.UnmarshalData(b)
+}
+
+
+// 7388859010
+func show_person(uid int64) (show.Data, error){
+	u:="https://api.weibo.com/webim/2/users/show.json"
+	d:=map[string]interface{}{
+		"uid" : uid, 
+		"source" : "209678993", 
+		"t" : now(), 
+	}
+    r,_:=get(u,d)
+    b, _ := ioutil.ReadAll(r.Body)
+   //fmt.Println("[msg]:",r.Status,string(b))
+	return show.UnmarshalData(b)
+}
+
+
+
+// 7388859010 0
+// 翻页与组消息一样 
+// 第一页max_id=0 
+// 之后修改max_id
+func get_conversation(uid int64,max_id int64) (conversation.Data, error){
+	u:="https://api.weibo.com/webim/2/direct_messages/conversation.json"
+	d:=map[string]interface{}{
+		"convert_emoji" : "1",
+		"count" : "15",
+		"max_id" : max_id,
+		"uid" : uid,
+		"is_include_group" : "0",
+		"source" : "209678993",
+		"t" : now()
+	}
+    r,_:=get(u,d)
+    b, _ := ioutil.ReadAll(r.Body)
+   //fmt.Println("[msg]:",r.Status,string(b))
+	return conversation.UnmarshalData(b)
+}
+
+
+
+//4356260621621693
+func get_group(id int64)(query_group.Data, error){
+	u:="https://api.weibo.com/webim/query_group.json"
+	d:=map[string]interface{}{
+	  "is_pc" : "1",
+	  "query_member" : "1",
+	  "sort_by_jp" : "1",
+	  "query_member_count" : "5000",
+	  "id" : fmt.Sprintf("%d", id),
+	  "source" : "209678993", //me
+	  "t" : now(), 
+	}
+   r,_:=get(u,d)
+   b, _ := ioutil.ReadAll(r.Body)
+   //fmt.Println("[msg]:",r.Status,string(b))
+   return query_group.UnmarshalData(b)
+}
+
+
+
+
+
+
+
+
+
 func test(){
 	var max_mid int64
 	max_mid=0
@@ -302,8 +404,6 @@ func GetGroupMsg(){
 	}
 	fmt.Println("group done")
 }
-
-
 
 func main() {
 }
