@@ -24,6 +24,7 @@ import (
 	. "../types"
 	"../types/contact"
 	"../types/query_group"
+	"../types/query"
 	"../types/batch_exists"
 	"../types/conversation"
 )
@@ -198,6 +199,11 @@ func get_msg(max_mid int64,id int64)(Msg){
 	return msg
 }
 
+
+
+
+
+
 //209678993
 //封号
 //{"error":"User does not exists!","error_code":20003,"request":"/2/account/profile/basic.json"}
@@ -212,9 +218,6 @@ func get_profile(s int64){
    b, _ := ioutil.ReadAll(r.Body)
    fmt.Println("[msg]:",r.Status,string(b))
 }
-
-
-
 
 // 7388859010
 func get_batch_exists(uid int64[]) (batch_exists.Data, error){
@@ -271,6 +274,9 @@ func get_conversation(uid int64,max_id int64) (conversation.Data, error){
 
 
 
+
+
+
 //4356260621621693
 func get_group(id int64)(query_group.Data, error){
 	u:="https://api.weibo.com/webim/query_group.json"
@@ -288,6 +294,21 @@ func get_group(id int64)(query_group.Data, error){
    //fmt.Println("[msg]:",r.Status,string(b))
    return query_group.UnmarshalData(b)
 }
+
+
+func get_group1(id int64) (query.TopLevel, error){
+	u:="https://api.weibo.com/webim/groupchat/query.json"
+	d:=map[string]interface{}{
+            "id":id,
+            "source" : "209678993",
+            "t" : now(),
+    }
+	r,_:=get(u,d)
+	b, _ := ioutil.ReadAll(r.Body)
+	//fmt.Println("[msg]:",r.Status,string(b))
+    return query.UnmarshalTopLevel(b)
+}
+
 
 
 
