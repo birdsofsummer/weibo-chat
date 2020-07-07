@@ -27,6 +27,7 @@ import (
 	"../types/query"
 	"../types/batch_exists"
 	"../types/conversation"
+	"../types/send_message"
 )
 
 var (
@@ -311,7 +312,24 @@ func get_group1(id int64) (query.TopLevel, error){
 
 
 
+//  send("4495461161738237","[太开心]")
+//  {"result":false,"request":"/groupchat/send_message.json","error_code":21248,"error":"您的账号已被锁定，有疑问请资询 @粉丝群"}
 
+func send(id int64,content string) (send_message.TopLevel, error){
+	u:="https://api.weibo.com/webim/groupchat/send_message.json"
+	d:=map[string]interface{}{
+	  "content" : content,
+	  "id" : id,
+	  "media_type" : "0",
+	  "annotations" : "{"webchat":1,"clientid":"k8q683i33rsrx5k9sibhp1zhbf5jc"}",
+	  "is_encoded" : "0",
+	  "source" : "209678993"
+    }
+	r,_:=get(u,d)
+	b, _ := ioutil.ReadAll(r.Body)
+	//fmt.Println("[msg]:",r.Status,string(b))
+    return send_message.UnmarshalTopLevel(b)
+}
 
 
 
