@@ -4,7 +4,7 @@
 //    topLevel, err := UnmarshalTopLevel(bytes)
 //    bytes, err = topLevel.Marshal()
 
-package main
+package send_message
 
 import "encoding/json"
 
