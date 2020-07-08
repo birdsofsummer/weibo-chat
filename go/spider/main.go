@@ -16,6 +16,7 @@ import (
 	//"log"
 	"net/url"
 	"fmt"
+	"math"
 	//"bufio"
 	//"io"
 	"io/ioutil"
@@ -177,6 +178,22 @@ func Get_gid(c contact.ContactData,err error) ([]int64){
 	return z
 }
 
+func Get_uid(c contact.ContactData,err error) ([]int64){
+	z:= []int64{}
+	if err!=nil{
+		fmt.Println("错误")
+		return z
+	}
+	for _,v:=range(c.Contacts){
+		fmt.Println(v.User.Name,v.User.ID,v.User.Type)
+		if v.User.Type != 2 {
+			z=append(z,v.User.ID)
+		}
+	}
+	//fmt.Println(z)
+	return z
+}
+
 
 func get_msg(max_mid int64,id int64)(Msg){
 	u:="https://api.weibo.com/webim/groupchat/query_messages.json"
@@ -274,6 +291,78 @@ func get_conversation(uid int64,max_id int64) (conversation.Data, error){
 }
 
 
+
+
+
+
+// size=15
+func get_conversations(id int64,from int64,to int64,c chan conversation.DirectMessages){
+	i:=0
+	fmt.Println("begin get_conversations...",id,from,to)
+	for {
+		fmt.Println(from,to,i)
+		if to>0 && int64(to)>=from{
+			fmt.Println("[done]:",i)
+			close(c)
+			break
+		}
+		r,err:=get_conversation(id,from)
+		if err!=nil {
+			close(c)
+			break
+		}
+	//	next:=r.NextCursor
+	//	total:=r.TotalNumber
+		m:=r.DirectMessages
+		last:=r.LastReadMid
+		//fmt.Println("[msg]:",r)
+		fmt.Println("[]:",len(m))
+
+		if len(m)>0{
+			//from=m[0].ID-1 
+			from=last-1 
+			c <- m
+		}else{
+			fmt.Println("[done]:",i,len(m))
+			close(c)
+			break
+		}
+		i++
+	}
+}
+
+func start_get_conversations(id int64){
+	from:=0
+	r,err:=get_conversation(id,from)
+	if err!=nil{
+		fmt.Println("eeeeeee")
+		return
+	}
+	total:=r.TotalNumber
+	m:=r.DirectMessages
+	//len(m)>0
+	n:=math.Ceil(total/len(m))
+	c := make(chan conversation.DirectMessages, n)
+	go get_conversations(id,0,0,c)
+	for i := range c {
+		fmt.Println(i)
+		//mongodb ...
+    }
+}
+
+
+
+
+
+func start_get_all_conversations (){
+	c:=Get_uid(Get_contacts())
+	go (func (){
+		for k,id :=range(c) {
+			fmt.Println(k)
+			start_get_conversations(id)
+		}
+	})()
+}
 
 
 
